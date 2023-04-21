@@ -1,60 +1,99 @@
-import time
-from telethon import TelegramClient, events, sync
-from telethon.tl.functions.account import UpdateProfileRequest
-from telethon.tl.functions.photos import UploadProfilePhotoRequest
+from telethon.sync import TelegramClient
+from telethon import events
+from datetime import datetime, timedelta
+import asyncio
 
-# Your Telegram API credentials
-api_id = YOUR_API_ID
-api_hash = 'YOUR_API_HASH'
-session_file = 'YOUR_SESSION_FILE'
+# fill in your API key, API hash, and string session here
+api_id = <your api id>
+api_hash = '<your api hash>'
+string_session = '<your string session>'
 
-# Create a Telegram client with the given API credentials
-client = TelegramClient(session_file, api_id, api_hash)
+# fill in the group ID and the messages you want to send here
+group_id = <your group id>
+messages = [
+    "Hello, world!",
+    "How are you doing?",
+    "What's up?",
+    "How's your day going?"
+]
 
-# Send a message to a Telegram group at a given time interval with different messages
-@client.on(events.NewMessage(chats='YOUR_GROUP'))
-async def send_message(event):
-    # Define your messages
-    messages = [
-        'Hello, everyone!',
-        'How are you doing today?',
-        'Just wanted to say hi!'
-    ]
-    # Send a message every 30 seconds
-    for message in messages:
-        await client.send_message('YOUR_GROUP', message)
-        time.sleep(30)
+# fill in the paths to your profile picture files here
+profile_pics = [
+    '/path/to/first/profile/pic.jpg',
+    '/path/to/second/profile/pic.jpg',
+    '/path/to/third/profile/pic.jpg'
+]
 
-# Auto-reply to personal chats
-@client.on(events.NewMessage(incoming=True))
-async def auto_reply(event):
-    # Define your auto-reply message
-    auto_reply_message = 'Thanks for your message! I will get back to you as soon as possible.'
-    # Send an auto-reply to all personal chats
-    if not event.is_group:
-        await client.send_message(event.chat_id, auto_reply_message)
+# fill in the names you want to use here
+names = [
+    'John',
+    'Jane',
+    'Alex',
+    'Sam'
+]
 
-# Auto-change the name and profile picture of your Telegram account at different time intervals
-async def change_profile():
-    # Define your profile names and profile picture paths
-    profile_names = [
-        'Name 1',
-        'Name 2',
-        'Name 3'
-    ]
-    profile_pics = [
-        'path/to/profile/pic1.jpg',
-        'path/to/profile/pic2.jpg',
-        'path/to/profile/pic3.jpg'
-    ]
-    # Change your profile every 30 seconds
+async def send_messages():
+    # create a client object with the API key, API hash, and string session
+    client = TelegramClient(string_session, api_id, api_hash)
+
+    # connect to Telegram
+    await client.connect()
+
+    # start the client's event loop
+    client.start()
+
+    # loop through the messages and send them to the group
     while True:
-        for i in range(len(profile_names)):
-            await client(UpdateProfileRequest(first_name=profile_names[i]))
-            await client(UploadProfilePhotoRequest(await client.upload_file(profile_pics[i])))
-            time.sleep(30)
+        for message in messages:
+            await client.send_message(group_id, message)
+            await asyncio.sleep(60)  # wait for 60 seconds before sending the next message
 
-# Start the Telegram client and run the auto-reply and auto-profile functions
-with client:
-    client.loop.run_until_complete(change_profile())
+async def reply_messages():
+    # create a client object with the API key, API hash, and string session
+    client = TelegramClient(string_session, api_id, api_hash)
+
+    # connect to Telegram
+    await client.connect()
+
+    # start the client's event loop
+    client.start()
+
+    # reply to personal messages
+    @client.on(events.NewMessage(chats=client.get_me()))
+    async def handle_new_message(event):
+        await asyncio.sleep(5) # wait for 5 seconds before replying
+        await event.respond('Hi there, thanks for messaging me!')
+
+    # run the client's event loop
     client.run_until_disconnected()
+
+async def change_profile():
+    # create a client object with the API key, API hash, and string session
+    client = TelegramClient(string_session, api_id, api_hash)
+
+    # connect to Telegram
+    await client.connect()
+
+    # start the client's event loop
+    client.start()
+
+    # loop through the profile pictures and names and update the bot's profile
+    while True:
+        for i in range(len(profile_pics)):
+            # read the profile picture file
+            with open(profile_pics[i], 'rb') as f:
+                profile_pic = await client.upload_file(f)
+
+            # update the bot's profile picture and name
+            await client(UpdateProfileRequest(photo=InputPhoto(id=profile_pic),
+                                               first_name=names[i],
+                                               last_name='Bot'))
+            await asyncio.sleep(60)  # wait for 60 seconds before changing the profile again
+
+if __name__ == '__main__':
+    tasks = [
+        asyncio.create_task(send_messages()),
+        asyncio.create_task(reply_messages()),
+        asyncio.create_task(change_profile())
+    ]
+    asyncio.run(asyncio.wait(tasks))
