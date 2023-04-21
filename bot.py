@@ -4,14 +4,14 @@ from datetime import datetime, timedelta
 import asyncio
 
 # fill in your API key, API hash, and string session here
-api_id = <your api id>
-api_hash = '<your api hash>'
-string_session = '<your string session>'
+api_id = '24639866'
+api_hash = 'd04ab3fca3e8b8bd2477d8dd1b3e2c97'
+string_session = '1BVtsOJIBu7ZVVXLiiHN5w6n0efhnc8EVc6zGyOf2ygYCuTZUrWzS_-AVzH0OBExFKZFXynfLLoR2WbzDKWuNZLo835A6P9Mb-_7398tH_zwdPD0vln8uyRYounP2tBFpqOTQIlypakazCHLhNQ2J5pZBOlPLZP_XBfweiu4GkQCrRXer5aB9UmlZ4uiJRSYnPEaaaFH0Bu9sdznB2PztbU0o9IFq6taMmXpVsTi16gt7vIM1kBi2LcJVHvMlR_tjKdP6LG_MUjV7SBwU3DSEB8y-5g1pIGxM38t8bNyppJ1cBfZIIeiIh_3BDPtnhXF_Xk3UKtI0ocXT8N5lZnqVv4MdyFNaKy0='
 
 # fill in the group ID and the messages you want to send here
-group_id = <your group id>
+group_id = '-1001633934133'
 messages = [
-    "Hello, world!",
+    "Hello!",
     "How are you doing?",
     "What's up?",
     "How's your day going?"
@@ -19,17 +19,17 @@ messages = [
 
 # fill in the paths to your profile picture files here
 profile_pics = [
-    '/path/to/first/profile/pic.jpg',
-    '/path/to/second/profile/pic.jpg',
-    '/path/to/third/profile/pic.jpg'
+    'https://telegra.ph/file/0c3c9cb1028a50724968a.jpg',
+    'https://telegra.ph/file/6c7285e9fa075393b375b.jpg',
+    'https://telegra.ph/file/5854d74e7e74213151140.jpg'
 ]
 
 # fill in the names you want to use here
 names = [
-    'John',
-    'Jane',
-    'Alex',
-    'Sam'
+    'Anjali',
+    'Natasha',
+    'Kajal',
+    'Shanti'
 ]
 
 async def send_messages():
@@ -46,7 +46,7 @@ async def send_messages():
     while True:
         for message in messages:
             await client.send_message(group_id, message)
-            await asyncio.sleep(60)  # wait for 60 seconds before sending the next message
+            await asyncio.sleep(20)  # wait for 60 seconds before sending the next message
 
 async def reply_messages():
     # create a client object with the API key, API hash, and string session
